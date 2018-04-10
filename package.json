@@ -1,6 +1,6 @@
 {
   "name": "mongoose-rest-api",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "REST API generator for Mongoose models",
   "main": "index.js",
   "scripts": {
