@@ -2,7 +2,16 @@
 
 A generator for REST API business logic for use with Express.js. Given a Mongoose model and a unique ID name, mongoose-rest-api will generate a set of methods that can be used directly with Express.js routes. Separating the logic into distinct methods in this way exposes a clean, testable surface, independent of the Express http request handling. In addition, this gives you a nice way to keep your library of business logic DRY by reusing and expanding upon the individual methods.
 
-Each method returns a promise which resolves to the result of the request.
+Each method returns a promise which resolves to the result of the request. Once these endpoint functions are linked up to an Express.js route, the result will be automatically generated routes like the following examples:
+
+`GET /widgets` Return a list of widgets
+`GET /widgets/WIDGET_ID` Return a specific widget, given it's ID
+`GET /widgets?color=blue` Return a list of widgets with the `color` attribute `'blue'`
+`GET /widgets?color=!` Returns a list of widgets that have any color but blue
+`GET /widgets?sort=-age` Returns a list of widgets sorted by their `age` attribute in reverse order
+`POST /widgets` Given a request body, will create a new Widget and respond with it
+`PUT /widgets/WIDGET_ID` Given a request body will modify the Widget specified by WIDGET_ID and respond with the modified version
+`DELETE /widget/WIDGET_ID` Deletes the widget specified by WIDGET_ID and respond with the object as it was before its deletion
 
 ## Installation
 
@@ -30,6 +39,7 @@ Each method returns a promise which resolves to the result of the request.
 
 |Parameter|Type|Description|
 |---------|----|-----------|
+|Any Column Name|String|Given a column name as the key, and a value, the resulting list will be AND filtered to match. Column values preceded with a `!` will be negatively matched|
 |columns|Array|A list of columns to include on resource. By default, all visible columns will be included|
 |populate|Array|A list of related objects to populate. By default only the id of the related object will be included|
 |limit|Number|Number of resources to include in response. Useful for pagination. This would be the number of items per page.|
