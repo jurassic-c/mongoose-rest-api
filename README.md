@@ -7,7 +7,7 @@ Each method returns a promise which resolves to the result of the request. Once 
 - `GET /widgets` Return a list of widgets
 - `GET /widgets/WIDGET_ID` Return a specific widget, given it's ID
 - `GET /widgets?color=blue` Return a list of widgets with the `color` attribute `'blue'`
-- `GET /widgets?color=!` Returns a list of widgets that have any color but blue
+- `GET /widgets?color=!blue` Returns a list of widgets that have any color but blue
 - `GET /widgets?sort=-age` Returns a list of widgets sorted by their `age` attribute in reverse order
 - `POST /widgets` Given a request body, will create a new Widget and respond with it
 - `PUT /widgets/WIDGET_ID` Given a request body will modify the Widget specified by WIDGET_ID and respond with the modified version
