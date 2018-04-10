@@ -4,14 +4,14 @@ A generator for REST API business logic for use with Express.js. Given a Mongoos
 
 Each method returns a promise which resolves to the result of the request. Once these endpoint functions are linked up to an Express.js route, the result will be automatically generated routes like the following examples:
 
-`GET /widgets` Return a list of widgets
-`GET /widgets/WIDGET_ID` Return a specific widget, given it's ID
-`GET /widgets?color=blue` Return a list of widgets with the `color` attribute `'blue'`
-`GET /widgets?color=!` Returns a list of widgets that have any color but blue
-`GET /widgets?sort=-age` Returns a list of widgets sorted by their `age` attribute in reverse order
-`POST /widgets` Given a request body, will create a new Widget and respond with it
-`PUT /widgets/WIDGET_ID` Given a request body will modify the Widget specified by WIDGET_ID and respond with the modified version
-`DELETE /widget/WIDGET_ID` Deletes the widget specified by WIDGET_ID and respond with the object as it was before its deletion
+- `GET /widgets` Return a list of widgets
+- `GET /widgets/WIDGET_ID` Return a specific widget, given it's ID
+- `GET /widgets?color=blue` Return a list of widgets with the `color` attribute `'blue'`
+- `GET /widgets?color=!` Returns a list of widgets that have any color but blue
+- `GET /widgets?sort=-age` Returns a list of widgets sorted by their `age` attribute in reverse order
+- `POST /widgets` Given a request body, will create a new Widget and respond with it
+- `PUT /widgets/WIDGET_ID` Given a request body will modify the Widget specified by WIDGET_ID and respond with the modified version
+- `DELETE /widget/WIDGET_ID` Deletes the widget specified by WIDGET_ID and respond with the object as it was before its deletion
 
 ## Installation
 
