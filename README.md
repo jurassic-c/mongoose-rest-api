@@ -58,7 +58,7 @@ const mongoose = require('mongoose');
 const Widget = mongoose.Model('Widget');
 const Rest = require('mongoose-rest-api');
 
-const endpoints = Rest(Widget, 'widget_id');
+const endpoints = Rest(Widget, 'widget_id'); // 'widget_id' is used to identify the ID parameter in our route definitions
 
 router.get('/', function(req, res, next) {
     methods.get(req, res).then(result => {
@@ -81,7 +81,7 @@ router.get('/:widget_id', function(req, res, next) { // note that :widget_id mat
 });
 
 router.post('/', function(req, res, next) {
-    endpoints.put(req, res).then(result => {
+    endpoints.post(req, res).then(result => {
         return res.status(201).json(result);
     }, err => {
         return next(err);
