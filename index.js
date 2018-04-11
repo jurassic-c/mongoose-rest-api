@@ -25,10 +25,10 @@ function RestCrud(Model, object_id_parameter) {
       if(req.query.sort) sort = req.query.sort;
 
       var offset = 0;
-      if(req.query.offset) offset = req.query.offset;
+      if(req.query.offset) offset = parseInt(req.query.offset);
 
       var limit = 0;
-      if(req.query.limit) limit = req.query.limit;
+      if(req.query.limit) limit = parseInt(req.query.limit);
 
       var params = {};
       for(var k in req.query) {

@@ -140,3 +140,9 @@ router.post('/', function(req, res, next) {
     });
 });
 ```
+
+## Changelog
+
+**1.0.5**
+
+- Bugfix: offset and limit query parameters were being interpreted as strings
