@@ -21,7 +21,7 @@ Each method returns a promise which resolves to the result of the request. Once 
 
 |Endpoint Name|Description|Promise Resolution|
 |-------------|-----------|------------------|
-|get|Respond with specified resource, or list of resources, unmodified.|If the request includes a resource identifier, the promise will resolve to the specified resource, otherwise it will resolve to a list of resources.|
+|get|Respond with specified resource, or list of resources, unmodified.|If the request includes a resource identifier, the promise will resolve to the specified resource, otherwise it will resolve to a list of resources. If `req.params.search_term` is provided, the list will be filtered according to the search term.|
 |post|Create a new resource from the Request body|Promise resolves the newly created resource|
 |put, patch|Modifies a specified resource|Promise resolves to the modified resource|
 |delete|Deletes a specified resource|Promise resolves to the deleted resource as it was before the deletion|
@@ -142,6 +142,10 @@ router.post('/', function(req, res, next) {
 ```
 
 ## Changelog
+
+**1.1.0**
+
+- Added search functionality to generated get endpoint
 
 **1.0.5**
 
