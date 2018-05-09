@@ -1,7 +1,8 @@
 var Q = require('q');
 
-function RestCrud(Model, object_id_parameter) {
+function RestCrud(Model, object_id_parameter, options) {
   if(!Model) throw "no Model specified";
+  if(!options) options = {}
 
   var get = function(req, res) {
     if(!req) throw "no Request object specified";
@@ -31,6 +32,17 @@ function RestCrud(Model, object_id_parameter) {
       if(req.query.limit) limit = parseInt(req.query.limit);
 
       var params = {};
+      if(req.params.search_term) {
+        if(!options.search_columns) throw new Error("No search columns specified in options");
+        var pattern = new RegExp(".*" + req.params.search_term + ".*", "i");
+        var search_params = [];
+        for(var i=0; i<options.search_columns.length; i++) {
+          var new_search_param = {};
+          new_search_param[options.search_columns[i]] = pattern;
+          search_params.push(new_search_param);
+        }
+        params['$or'] = search_params;
+      }
       for(var k in req.query) {
         if(["sort", "populate", "columns", "offset", "limit"].indexOf(k) > -1) continue;
         var v = req.query[k];
