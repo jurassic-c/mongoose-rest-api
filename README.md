@@ -35,11 +35,11 @@ Each method returns a promise which resolves to the result of the request. Once 
 |columns|Array|A list of columns to include on resource. By default, all visible columns will be included|
 |populate|Array|A list of related objects to populate. By default only the id of the related object will be included|
 
-## Get without ID
+### Get without ID
 
 |Parameter|Type|Description|
 |---------|----|-----------|
-|Any Column Name|String|Given a column name as the key, and a value, the resulting list will be AND filtered to match. Column values preceded with a `!` will be negatively matched|
+|Any Column Name|String|Given a column name as the key, and a value, the resulting list will be AND filtered to match. Column values preceded with a `!` will be negatively matched. Column values delimited by commas will result in an array of matching objects|
 |columns|Array|A list of columns to include on resource. By default, all visible columns will be included|
 |populate|Array|A list of related objects to populate. By default only the id of the related object will be included|
 |limit|Number|Number of resources to include in response. Useful for pagination. This would be the number of items per page.|
