@@ -229,6 +229,26 @@ describe("Rest CRUD Library", function() {
         });
       });
 
+      it("with query parameter value having comma delimited values objects returned will only match those specified", function() {
+        var deferred = Q.defer();
+        req.query.col_1 = "M1 Col 1,M2 Col 1";
+        var promise = restget(req, res);
+        promise.then(function(result) {
+          deferred.resolve(result);
+        });
+        return deferred.promise.then(function(result) {
+          expect(result.length).to.equal(2);
+          let m1_found = false;
+          let m2_found = false;
+          for(let i=0; i<result.length; i++) {
+            if(result[i].col_1 == "M1 Col 1") m1_found = true;
+            if(result[i].col_1 == "M2 Col 1") m2_found = true;
+          }
+          expect(m1_found).to.equal(true);
+          expect(m2_found).to.equal(true);
+        });
+      });
+
       it("with 'true' or 'TRUE' query parameter objects filtered by boolean true column names", function() {
         model.col_3 = true;
         var deferred = Q.defer();

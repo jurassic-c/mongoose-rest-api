@@ -55,6 +55,9 @@ function RestCrud(Model, object_id_parameter, options) {
         } else {
           params[k] = v;
         }
+        if(typeof params[k] == "string" && params[k].indexOf(",") != -1) {
+          params[k] = {$in: v.split(",")};
+        }
       }
       Model.count(params).exec(function(err, count) {
         if(err) return deferred.reject(err);
