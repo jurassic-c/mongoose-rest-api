@@ -1,11 +1,13 @@
-var Mockgoose = require('mockgoose').Mockgoose;
 var mongoose = require('mongoose');
-var mockgoose = new Mockgoose(mongoose);
 var chai = require('chai');
 var chaiAsPromised = require('chai-as-promised');
 var Q = require('q');
 var ObjectId = mongoose.Types.ObjectId;
 var Rest = require('../index.js')
+var MongoMemoryServer = require('mongodb-memory-server').MongoMemoryServer;
+var mongod = new MongoMemoryServer();
+var conn;
+
 var TestResponse = function() {
   this.headers = {};
 };
@@ -29,6 +31,7 @@ var ModelSchema = new mongoose.Schema({
   col_1: { type: String },
   col_2: { type: String },
   col_3: { type: Boolean },
+  col_4: [{ type: String }],
   related_model: { type: mongoose.Schema.Types.ObjectId, ref: 'Model'}
 });
 var Model = mongoose.model('Model', ModelSchema);
@@ -37,21 +40,23 @@ describe("Rest CRUD Library", function() {
   var models, model;
   var req, res;
 
-	before(function(done) {
-		mockgoose.prepareStorage().then(function() {
-      mongoose.connect('mongodb://example.com/test_db', function(err) {
-        done(err);
+  before(function(done) {
+    mongod.getUri().then(uri => {
+      conn = mongoose.connect(uri).then(function() {
+        done();
+      }, function(err) {
+        console.log("ERR:", err);
       });
-		});
-	});
+    });
+  });
 
   beforeEach(function(done) {
     req = {body: {}, params:{}, query: {}};
     res = new TestResponse();
     model_params = [
-      {name: "Model 1", col_1: "M1 Col 1", col_2: "AAAAA"},
-      {name: "Model 2", col_1: "M2 Col 1", col_2: "CCCCC"},
-      {name: "Model 3", col_1: "M3 Col 1", col_2: "CCCCC"}
+      {name: "Model 1", col_1: "M1 Col 1", col_2: "AAAAA", col_4: ["a", "b"]},
+      {name: "Model 2", col_1: "M2 Col 1", col_2: "CCCCC", col_4: ["c", "d"]},
+      {name: "Model 3", col_1: "M3 Col 1", col_2: "CCCCC", col_4: ["e", "f"]},
     ];
     Model.create(model_params, function(err, new_models) {
       if(err) throw err;
@@ -66,16 +71,11 @@ describe("Rest CRUD Library", function() {
     });
   });
 
-	afterEach(function(done) {
-		mockgoose.helper.reset().then(function() {
-			done();
-		}, function(err) {
-      done(err);
-    })
-    .catch(function(err) {
-      done(err);
+  afterEach(function(done) {
+    mongoose.connection.db.dropDatabase(function() {
+      done();
     });
-	})
+  })
 
   it("requires a mongoose model as its first argument", function() {
     var errored = false;
@@ -465,6 +465,17 @@ describe("Rest CRUD Library", function() {
       });
     });
 
+    it("when array field set to empty array, promise resolves to specified object, with specified array fields updated", function() {
+      req.params.object_id = model._id.toString();
+			req.body.col_4 = [];
+      var promise = restpatch(req, res);
+      return promise.then(function(result) {
+        expect(result._id.toString()).to.equal(model._id.toString());
+        expect(result.name).to.equal(model.name);
+        expect(result.col_4.length).to.equal(0);
+      });
+    });
+
     it("will not update _id and __v fields", function() {
       req.params.object_id = model._id.toString();
       req.body._id = "NEW ID!!!!!";
@@ -536,9 +547,9 @@ describe("Rest CRUD Library", function() {
 
   });
 
-//	after(function(done) {
-//		mongoose.unmock(function() {
-//			done();
-//		});
-//	})
+//  after(function(done) {
+//    mongoose.unmock(function() {
+//      done();
+//    });
+//  })
 });
