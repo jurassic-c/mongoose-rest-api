@@ -143,6 +143,14 @@ router.post('/', function(req, res, next) {
 
 ## Changelog
 
+**1.2.1**
+
+- Updated tests to use mongodb-memory-server instead of mockgoose 
+
+**1.2.0**
+
+- Added ability to specify multiple values for a column in GET queries
+
 **1.1.0**
 
 - Added search functionality to generated get endpoint
