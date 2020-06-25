@@ -143,6 +143,10 @@ router.post('/', function(req, res, next) {
 
 ## Changelog
 
+**1.2.2**
+
+- Security Update. Updated dependencies to elimnate known vulnerabilities
+
 **1.2.1**
 
 - Updated tests to use mongodb-memory-server instead of mockgoose 
