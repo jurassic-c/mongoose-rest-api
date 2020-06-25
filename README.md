@@ -141,7 +141,118 @@ router.post('/', function(req, res, next) {
 });
 ```
 
+### Endpoint Composition
+
+Using the generated endpoints, it is simple to compose them in combinations. In the following
+Example, a Widget has a one-to-many relationship with Doodads.
+
+```js
+// Express.js route file: routes/widgets.js
+const express = require('express');
+const router = express.Router();
+const mongoose = require('mongoose');
+const Widget = mongoose.Model('Widget');
+const Doodad = mongoose.Model('Doodad');
+const Rest = require('mongoose-rest-api');
+
+const widget_endpoints = Rest(Widget, 'widget_id'); // 'widget_id' is used to identify the ID parameter in our route definitions
+const doodad_endpoints = Rest(Doodad, 'doodad_id'); // 'doodad_id' is used to identify the ID parameter in our route definitions
+
+router.get('/', function(req, res, next) {
+    widget_endpoints.get(req, res).then(result => {
+        return res.status(200).json(result);
+    }, err => {
+        return next(err);
+    });
+});
+
+router.get('/:widget_id', function(req, res, next) { // note that :widget_id matches the second argument of Rest()
+    widget_endpoints.get(req, res).then(result => {
+        if(result) {
+            return res.status(200).json(result);
+        } else {
+            return res.sendStatus(404);
+        }
+    }, err => {
+        return next(err);
+    });
+});
+
+router.get('/:widget_id/doodads', function(req, res, next) {
+    req.query.widget = req.params.widget_id; // Here we add a query parameter which filters the results to
+                                             // Doodads with the attribute widget equal to the specified
+                                             // :widget_id
+    doodad_endpoints.get(req, res).then(result => {
+        return res.status(200).json(result);
+    }, err => {
+        return next(err);
+    });
+});
+
+router.get('/:widget_id/doodads/:doodad_id', function(req, res, next) {
+    doodad_endpoints.get(req, res).then(result => {
+        if(result) {
+            if(result.widget != req.params.widget_id) return res.status(400).json({"error": "Doodad does not belong to specified Widget!"})
+            return res.status(200).json(result);
+        } else {
+            return res.sendStatus(404);
+        }
+    }, err => {
+        return next(err);
+    });
+});
+
+router.post('/', function(req, res, next) {
+    widget_endpoints.post(req, res).then(result => {
+        return res.status(201).json(result);
+    }, err => {
+        return next(err);
+    });
+});
+
+// In this example, each widget is only allowed a maximum number of Doodads. Our logic ensures this limit is not exceeded
+
+router.post('/:widget_id/doodads', function(req, res, next) {
+    widget_endpoints.get(req, res).then(result => {
+      if(widget.max_doodads == widget.doodads.length) return res.status(400).json({"error": "Widget is already at Doodad limit"})
+      doodad_endpoints.post(req, res).then(result => {
+          return res.status(201).json(result);
+      }, err => {
+          return next(err);
+      });
+    }, err => {
+        return next(err);
+    });
+    req.body.widget = req.params.widget_id; // Here we add or override the body parameter 'widget' with
+                                            // the specified :widget_id
+});
+
+router.patch('/:widget_id', function(req, res, next) {
+    widget_endpoints.patch(req, res).then(result => {
+        if(result) {
+            return res.status(200).json(result);
+        } else {
+            return res.sendStatus(404);
+        }
+    }, err => {
+        return next(err);
+    });
+});
+
+router.delete('/:widget_id', function(req, res, next) {
+    widget_endpoints.patch(req, res).then(result => {
+        return res.status(200).json(result);
+    }, err => {
+        return res.sendStatus(200);
+    });
+});
+```
+
 ## Changelog
+
+**1.2.3**
+
+- Updated README to highlight endpoint composition
 
 **1.2.2**
 
