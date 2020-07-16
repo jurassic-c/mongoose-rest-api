@@ -250,6 +250,10 @@ router.delete('/:widget_id', function(req, res, next) {
 
 ## Changelog
 
+**1.2.4**
+
+- Security update. Updated lodash to version 4.17.19
+
 **1.2.3**
 
 - Updated README to highlight endpoint composition
