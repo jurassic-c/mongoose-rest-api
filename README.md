@@ -101,7 +101,7 @@ router.patch('/:widget_id', function(req, res, next) {
 });
 
 router.delete('/:widget_id', function(req, res, next) {
-    endpoints.patch(req, res).then(result => {
+    endpoints.delete(req, res).then(result => {
         return res.status(200).json(result);
     }, err => {
         return res.sendStatus(200);
@@ -240,7 +240,7 @@ router.patch('/:widget_id', function(req, res, next) {
 });
 
 router.delete('/:widget_id', function(req, res, next) {
-    widget_endpoints.patch(req, res).then(result => {
+    widget_endpoints.delete(req, res).then(result => {
         return res.status(200).json(result);
     }, err => {
         return res.sendStatus(200);
