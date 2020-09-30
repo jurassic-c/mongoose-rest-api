@@ -250,6 +250,11 @@ router.delete('/:widget_id', function(req, res, next) {
 
 ## Changelog
 
+**1.2.5**
+
+- Security update. Updated mongodb-memory-server to version 8.0.1
+- Updated faulty example code in README
+
 **1.2.4**
 
 - Security update. Updated lodash to version 4.17.19
