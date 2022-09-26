@@ -21,6 +21,10 @@
     "url": "https://github.com/jurassic-c/mongoose-rest-api/issues"
   },
   "homepage": "https://github.com/jurassic-c/mongoose-rest-api#readme",
+  "engines" : { 
+    "npm" : ">=8.0.0",
+    "node" : ">=16.0.0"
+  },
   "dependencies": {
   },
   "devDependencies": {
