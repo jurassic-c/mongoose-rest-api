@@ -1,10 +1,10 @@
-var mongoose = require("mongoose");
-var chai = require("chai");
-var chaiAsPromised = require("chai-as-promised");
-var Q = require("q");
+import mongoose from "mongoose";
+import chai from "chai";
+import chaiAsPromised from "chai-as-promised";
+import Q from "q";
 var ObjectId = mongoose.Types.ObjectId;
-var Rest = require("../index.js");
-var MongoMemoryServer = require("mongodb-memory-server").MongoMemoryServer;
+import Rest from "../index.js";
+import { MongoMemoryServer } from "mongodb-memory-server";
 var mongod = await MongoMemoryServer.create();
 var conn;
 
@@ -24,7 +24,6 @@ TestResponse.prototype.get = function (header_name) {
 chai.use(chaiAsPromised);
 chai.should();
 var expect = chai.expect;
-assert = chai.assert;
 
 var ModelSchema = new mongoose.Schema({
   name: { type: String },
@@ -41,22 +40,21 @@ describe("Rest CRUD Library", function () {
   var req, res;
 
   before(function (done) {
-    mongod.getUri().then((uri) => {
-      conn = mongoose.connect(uri).then(
-        function () {
-          done();
-        },
-        function (err) {
-          console.log("ERR:", err);
-        }
-      );
-    });
+    let uri = mongod.getUri();
+    conn = mongoose.connect(uri).then(
+      function () {
+        done();
+      },
+      function (err) {
+        console.log("ERR:", err);
+      }
+    );
   });
 
   beforeEach(function (done) {
     req = { body: {}, params: {}, query: {} };
     res = new TestResponse();
-    model_params = [
+    let model_params = [
       { name: "Model 1", col_1: "M1 Col 1", col_2: "AAAAA", col_4: ["a", "b"] },
       { name: "Model 2", col_1: "M2 Col 1", col_2: "CCCCC", col_4: ["c", "d"] },
       { name: "Model 3", col_1: "M3 Col 1", col_2: "CCCCC", col_4: ["e", "f"] },
