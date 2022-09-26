@@ -59,14 +59,19 @@ function RestCrud(Model, object_id_parameter, options) {
           params[k] = {$in: v.split(",")};
         }
       }
-      Model.count(params).exec(function(err, count) {
-        if(err) return deferred.reject(err);
-        res.set('X-Total', count);
-        if(limit) res.set('X-Total-Pages', Math.ceil(count/limit));
-        Model.find(params,columns).populate(populate).sort(sort).skip(offset).limit(limit).exec(function(err, objects) {
-          if(err) return deferred.reject(err);
-          return deferred.resolve(objects);
-        });
+      Model.countDocuments(params).exec(function (err, count) {
+        if (err) return deferred.reject(err);
+        res.set("X-Total", count);
+        if (limit) res.set("X-Total-Pages", Math.ceil(count / limit));
+        Model.find(params, columns)
+          .populate(populate)
+          .sort(sort)
+          .skip(offset)
+          .limit(limit)
+          .exec(function (err, objects) {
+            if (err) return deferred.reject(err);
+            return deferred.resolve(objects);
+          });
       });
     }
     return deferred.promise;
