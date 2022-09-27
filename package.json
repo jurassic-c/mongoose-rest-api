@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/admin-devactif/mongoose-rest-api.git"
+    "url": "git+https://github.com/DevActif/mongoose-rest-api.git"
   },
   "keywords": [
     "mongoose",
@@ -18,9 +18,9 @@
   "author": "Colby Sollars",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/admin-devactif/mongoose-rest-api/issues"
+    "url": "https://github.com/DevActif/mongoose-rest-api/issues"
   },
-  "homepage": "https://github.com/admin-devactif/mongoose-rest-api#readme",
+  "homepage": "https://github.com/DevActif/mongoose-rest-api#readme",
   "dependencies": {
     "q": "^1.5.1"
   },
