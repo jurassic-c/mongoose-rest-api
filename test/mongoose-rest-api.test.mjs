@@ -5,7 +5,6 @@ var ObjectId = mongoose.Types.ObjectId;
 import Rest from "../index.js";
 import { MongoMemoryServer } from "mongodb-memory-server";
 var mongod = await MongoMemoryServer.create();
-var conn;
 
 var TestResponse = function () {
   this.headers = {};
@@ -37,20 +36,19 @@ var Model = mongoose.model("Model", ModelSchema);
 describe("Rest CRUD Library", function () {
   var models, model;
   var req, res;
+  this.timeout(500);
 
-  before(function (done) {
+  before(function connectMongo(done) {
     let uri = mongod.getUri();
-    conn = mongoose.connect(uri).then(
-      function () {
+    mongoose
+      .connect(uri)
+      .then((connection) => {
         done();
-      },
-      function (err) {
-        console.log("ERR:", err);
-      }
-    );
+      })
+      .catch(done);
   });
 
-  beforeEach(function (done) {
+  beforeEach(function seedDatabase(done) {
     req = { body: {}, params: {}, query: {} };
     res = new TestResponse();
     let model_params = [
@@ -64,23 +62,21 @@ describe("Rest CRUD Library", function () {
       model = new_models[0];
       model.related_model = new_models[1]._id;
       model.save(function (err, saved_model) {
-        if (err) throw err;
+        if (err) return done(err);
         model = saved_model;
         done();
       });
     });
   });
 
-  afterEach(function (done) {
-    mongoose.connection.db.dropDatabase(function () {
-      done();
-    });
+  afterEach(function dropDatabase(done) {
+    mongoose.connection.db.dropDatabase(done);
   });
 
   it("requires a mongoose model as its first argument", function () {
     var errored = false;
     try {
-      Rest();
+      Rest().then(done);
     } catch (err) {
       errored = true;
     }
@@ -546,9 +542,13 @@ describe("Rest CRUD Library", function () {
     });
   });
 
-  //  after(function(done) {
-  //    mongoose.unmock(function() {
-  //      done();
-  //    });
-  //  })
+  after(function closeConnection(done) {
+    mongod
+      .stop()
+      .then(() => mongoose.disconnect())
+      .then(() => {
+        console.log("done");
+        done();
+      });
+  });
 });
