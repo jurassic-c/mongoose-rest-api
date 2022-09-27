@@ -58,10 +58,10 @@ const mongoose = require('mongoose');
 const Widget = mongoose.Model('Widget');
 const Rest = require('mongoose-rest-api');
 
-const endpoints = Rest(Widget, 'widget_id'); // 'widget_id' is used to identify the ID parameter in our route definitions
+const restApi = Rest(Widget, 'widget_id'); // 'widget_id' is used to identify the ID parameter in our route definitions
 
 router.get('/', function(req, res, next) {
-    methods.get(req, res).then(result => {
+    restApi.get(req, res).then(result => {
         return res.status(200).json(result);
     }, err => {
         return next(err);
@@ -69,7 +69,7 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/:widget_id', function(req, res, next) { // note that :widget_id matches the second argument of Rest()
-    endpoints.get(req, res).then(result => {
+    restApi.get(req, res).then(result => {
         if(result) {
             return res.status(200).json(result);
         } else {
@@ -81,7 +81,7 @@ router.get('/:widget_id', function(req, res, next) { // note that :widget_id mat
 });
 
 router.post('/', function(req, res, next) {
-    endpoints.post(req, res).then(result => {
+    restApi.post(req, res).then(result => {
         return res.status(201).json(result);
     }, err => {
         return next(err);
@@ -89,7 +89,7 @@ router.post('/', function(req, res, next) {
 });
 
 router.patch('/:widget_id', function(req, res, next) {
-    endpoints.patch(req, res).then(result => {
+    restApi.patch(req, res).then(result => {
         if(result) {
             return res.status(200).json(result);
         } else {
@@ -101,7 +101,7 @@ router.patch('/:widget_id', function(req, res, next) {
 });
 
 router.delete('/:widget_id', function(req, res, next) {
-    endpoints.delete(req, res).then(result => {
+    restApi.delete(req, res).then(result => {
         return res.status(200).json(result);
     }, err => {
         return res.sendStatus(200);
@@ -117,23 +117,22 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const Widget = mongoose.Model('Widget');
-const Q = require('q');
 const Rest = require('mongoose-rest-api');
 
-const endpoints = Rest(Widget, 'widget_id');
+const restApi = Rest(Widget, 'widget_id');
 
-const myPost = function(req, res) {
-    let deferred = Q.defer();
-    validate_widget(req.body).then(result => { // validate_widget() defined elsewhere
-        endpoints.post(req, res).then(result => deferred.resolve(result), err => deferred.reject(err));
-    }, err => {
-        deferred.reject(err);
-    });
-    return deferred.promise;
+const myPost = async function(req, res, next) {
+    try{
+        let result = await validate_widget(req.body) // validate_widget() defined elsewhere
+        result = await restApi.post(req, res)
+        return result
+    }catch(e){
+        next(e)
+    }
 }
 
 router.post('/', function(req, res, next) {
-    myPost(req, res).then(result => { // Note we use myPost here instead of endpoints.post
+    myPost(req, res).then(result => { // Note we use myPost here instead of restApi.post
         return res.status(200).json(result);
     }, err => {
         return next(err);
@@ -143,7 +142,7 @@ router.post('/', function(req, res, next) {
 
 ### Endpoint Composition
 
-Using the generated endpoints, it is simple to compose them in combinations. In the following
+Using the generated restApi, it is simple to compose them in combinations. In the following
 Example, a Widget has a one-to-many relationship with Doodads.
 
 ```js
@@ -155,11 +154,11 @@ const Widget = mongoose.Model('Widget');
 const Doodad = mongoose.Model('Doodad');
 const Rest = require('mongoose-rest-api');
 
-const widget_endpoints = Rest(Widget, 'widget_id'); // 'widget_id' is used to identify the ID parameter in our route definitions
-const doodad_endpoints = Rest(Doodad, 'doodad_id'); // 'doodad_id' is used to identify the ID parameter in our route definitions
+const widget_restApi = Rest(Widget, 'widget_id'); // 'widget_id' is used to identify the ID parameter in our route definitions
+const doodad_restApi = Rest(Doodad, 'doodad_id'); // 'doodad_id' is used to identify the ID parameter in our route definitions
 
 router.get('/', function(req, res, next) {
-    widget_endpoints.get(req, res).then(result => {
+    widget_restApi.get(req, res).then(result => {
         return res.status(200).json(result);
     }, err => {
         return next(err);
@@ -167,7 +166,7 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/:widget_id', function(req, res, next) { // note that :widget_id matches the second argument of Rest()
-    widget_endpoints.get(req, res).then(result => {
+    widget_restApi.get(req, res).then(result => {
         if(result) {
             return res.status(200).json(result);
         } else {
@@ -182,7 +181,7 @@ router.get('/:widget_id/doodads', function(req, res, next) {
     req.query.widget = req.params.widget_id; // Here we add a query parameter which filters the results to
                                              // Doodads with the attribute widget equal to the specified
                                              // :widget_id
-    doodad_endpoints.get(req, res).then(result => {
+    doodad_restApi.get(req, res).then(result => {
         return res.status(200).json(result);
     }, err => {
         return next(err);
@@ -190,7 +189,7 @@ router.get('/:widget_id/doodads', function(req, res, next) {
 });
 
 router.get('/:widget_id/doodads/:doodad_id', function(req, res, next) {
-    doodad_endpoints.get(req, res).then(result => {
+    doodad_restApi.get(req, res).then(result => {
         if(result) {
             if(result.widget != req.params.widget_id) return res.status(400).json({"error": "Doodad does not belong to specified Widget!"})
             return res.status(200).json(result);
@@ -203,7 +202,7 @@ router.get('/:widget_id/doodads/:doodad_id', function(req, res, next) {
 });
 
 router.post('/', function(req, res, next) {
-    widget_endpoints.post(req, res).then(result => {
+    widget_restApi.post(req, res).then(result => {
         return res.status(201).json(result);
     }, err => {
         return next(err);
@@ -213,9 +212,9 @@ router.post('/', function(req, res, next) {
 // In this example, each widget is only allowed a maximum number of Doodads. Our logic ensures this limit is not exceeded
 
 router.post('/:widget_id/doodads', function(req, res, next) {
-    widget_endpoints.get(req, res).then(result => {
+    widget_restApi.get(req, res).then(result => {
       if(widget.max_doodads == widget.doodads.length) return res.status(400).json({"error": "Widget is already at Doodad limit"})
-      doodad_endpoints.post(req, res).then(result => {
+      doodad_restApi.post(req, res).then(result => {
           return res.status(201).json(result);
       }, err => {
           return next(err);
@@ -228,7 +227,7 @@ router.post('/:widget_id/doodads', function(req, res, next) {
 });
 
 router.patch('/:widget_id', function(req, res, next) {
-    widget_endpoints.patch(req, res).then(result => {
+    widget_restApi.patch(req, res).then(result => {
         if(result) {
             return res.status(200).json(result);
         } else {
@@ -240,7 +239,7 @@ router.patch('/:widget_id', function(req, res, next) {
 });
 
 router.delete('/:widget_id', function(req, res, next) {
-    widget_endpoints.delete(req, res).then(result => {
+    widget_restApi.delete(req, res).then(result => {
         return res.status(200).json(result);
     }, err => {
         return res.sendStatus(200);
@@ -249,6 +248,12 @@ router.delete('/:widget_id', function(req, res, next) {
 ```
 
 ## Changelog
+
+**1.3.0**
+
+- Replace usage of count for countDocuments
+- Update dependencies
+- remove Q dependency
 
 **1.2.5**
 
