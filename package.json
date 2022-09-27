@@ -1,6 +1,6 @@
 {
   "name": "mongoose-rest-api",
-  "version": "1.2.5",
+  "version": "1.3.0",
   "description": "REST API generator for Mongoose models",
   "main": "index.js",
   "scripts": {
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jurassic-c/mongoose-rest-api.git"
+    "url": "git+https://github.com/admin-devactif/mongoose-rest-api.git"
   },
   "keywords": [
     "mongoose",
@@ -18,9 +18,9 @@
   "author": "Colby Sollars",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/jurassic-c/mongoose-rest-api/issues"
+    "url": "https://github.com/admin-devactif/mongoose-rest-api/issues"
   },
-  "homepage": "https://github.com/jurassic-c/mongoose-rest-api#readme",
+  "homepage": "https://github.com/admin-devactif/mongoose-rest-api#readme",
   "dependencies": {
     "q": "^1.5.1"
   },
