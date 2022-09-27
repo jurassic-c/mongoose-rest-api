@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
-import Q from "q";
 var ObjectId = mongoose.Types.ObjectId;
 import Rest from "../index.js";
 import { MongoMemoryServer } from "mongodb-memory-server";
@@ -214,30 +213,29 @@ describe("Rest CRUD Library", function () {
 
       it("with null query parameter objects filtered by null column names", function () {
         model.col_2 = null;
-        var deferred = Q.defer();
-        model.save(function (err, saved_model) {
-          if (err) throw err;
-          model = saved_model;
-          req.query.col_2 = "";
-          var promise = restget(req, res);
-          promise.then(function (result) {
-            deferred.resolve(result);
+        let save = new Promise((resolve, reject) => {
+          model.save(function (err, saved_model) {
+            if (err) return reject(err);
+            model = saved_model;
+            req.query.col_2 = "";
+            var promise = restget(req, res);
+            promise.then(function (result) {
+              resolve(result);
+            });
           });
         });
-        return deferred.promise.then(function (result) {
+
+        return save.then(function (result) {
           expect(result.length).to.equal(1);
           expect(result[0].name).to.equal("Model 1");
         });
       });
 
       it("with query parameter value having comma delimited values objects returned will only match those specified", function () {
-        var deferred = Q.defer();
         req.query.col_1 = "M1 Col 1,M2 Col 1";
         var promise = restget(req, res);
-        promise.then(function (result) {
-          deferred.resolve(result);
-        });
-        return deferred.promise.then(function (result) {
+
+        return promise.then(function (result) {
           expect(result.length).to.equal(2);
           let m1_found = false;
           let m2_found = false;
@@ -252,17 +250,18 @@ describe("Rest CRUD Library", function () {
 
       it("with 'true' or 'TRUE' query parameter objects filtered by boolean true column names", function () {
         model.col_3 = true;
-        var deferred = Q.defer();
-        model.save(function (err, saved_model) {
-          if (err) throw err;
-          model = saved_model;
-          req.query.col_3 = "True";
-          var promise = restget(req, res);
-          promise.then(function (result) {
-            deferred.resolve(result);
+        let promise = new Promise((resolve) => {
+          model.save(function (err, saved_model) {
+            if (err) throw err;
+            model = saved_model;
+            req.query.col_3 = "True";
+            var promise = restget(req, res);
+            promise.then(function (result) {
+              resolve(result);
+            });
           });
         });
-        return deferred.promise.then(function (result) {
+        return promise.then(function (result) {
           expect(result.length).to.equal(1);
           expect(result[0].name).to.equal("Model 1");
         });
@@ -270,17 +269,19 @@ describe("Rest CRUD Library", function () {
 
       it("with 'false' or 'FALSE' query parameter objects filtered by boolean false column names", function () {
         model.col_3 = false;
-        var deferred = Q.defer();
-        model.save(function (err, saved_model) {
-          if (err) throw err;
-          model = saved_model;
-          req.query.col_3 = "False";
-          var promise = restget(req, res);
-          promise.then(function (result) {
-            deferred.resolve(result);
+        let promise = new Promise((resolve) => {
+          model.save(function (err, saved_model) {
+            if (err) throw err;
+            model = saved_model;
+            req.query.col_3 = "False";
+            var promise = restget(req, res);
+            promise.then(function (result) {
+              resolve(result);
+            });
           });
         });
-        return deferred.promise.then(function (result) {
+
+        return promise.then(function (result) {
           expect(result.length).to.equal(1);
           expect(result[0].name).to.equal("Model 1");
         });
@@ -523,17 +524,17 @@ describe("Rest CRUD Library", function () {
     it("promise resolves to true on success", function () {
       req.params.object_id = model._id.toString();
       var promise = restdelete(req, res);
-      var delete_deferred = Q.defer();
-      promise.then(function (result) {
-        Model.findById(model._id, function (err, object) {
-          if (err) throw err;
-          delete_deferred.resolve(object);
-        });
-      });
-      return Q.all([promise, delete_deferred.promise]).then(function (results) {
-        expect(results[0]).to.be.true;
-        expect(results[1]).to.be.null;
-      });
+      promise
+        .then(function (result) {
+          expect(result).to.be.true;
+          return new Promise((resolve, reject) => {
+            Model.findById(model._id, function (err, object) {
+              if (err) return reject(err);
+              resolve(object);
+            });
+          });
+        })
+        .then((result) => expect(result.to.be.null));
     });
 
     it("promise resolves to null if object not found", function () {
