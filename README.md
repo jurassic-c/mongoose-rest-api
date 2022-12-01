@@ -250,6 +250,10 @@ router.delete('/:widget_id', function(req, res, next) {
 
 ## Changelog
 
+**1.2.7**
+
+- Issue #10 - Fixed deprecated reference to collection.count()
+
 **1.2.6**
 
 - Security update. Updated mongodb-memory-server to version 8.10.1
