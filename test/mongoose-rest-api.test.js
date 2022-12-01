@@ -7,6 +7,8 @@ var Rest = require('../index.js')
 var MongoMemoryServer = require('mongodb-memory-server').MongoMemoryServer;
 var conn;
 
+mongoose.set('useFindAndModify', false);
+
 var TestResponse = function() {
   this.headers = {};
 };
@@ -72,7 +74,7 @@ describe("Rest CRUD Library", function() {
   });
 
   afterEach(function(done) {
-    Model.remove({}, (result) => {
+    Model.deleteMany({}, (result) => {
       done();
     });
   })

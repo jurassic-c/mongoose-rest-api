@@ -59,7 +59,7 @@ function RestCrud(Model, object_id_parameter, options) {
           params[k] = {$in: v.split(",")};
         }
       }
-      Model.count(params).exec(function(err, count) {
+      Model.countDocuments(params).exec(function(err, count) {
         if(err) return deferred.reject(err);
         res.set('X-Total', count);
         if(limit) res.set('X-Total-Pages', Math.ceil(count/limit));
