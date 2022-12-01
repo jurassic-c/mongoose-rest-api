@@ -6,8 +6,6 @@ import Rest from "../index.js";
 import { MongoMemoryServer } from "mongodb-memory-server";
 var mongod = await MongoMemoryServer.create();
 
-mongoose.set('useFindAndModify', false);
-
 var TestResponse = function () {
   this.headers = {};
 };
