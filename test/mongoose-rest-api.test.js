@@ -5,7 +5,6 @@ var Q = require('q');
 var ObjectId = mongoose.Types.ObjectId;
 var Rest = require('../index.js')
 var MongoMemoryServer = require('mongodb-memory-server').MongoMemoryServer;
-var mongod = new MongoMemoryServer();
 var conn;
 
 var TestResponse = function() {
@@ -41,7 +40,8 @@ describe("Rest CRUD Library", function() {
   var req, res;
 
   before(function(done) {
-    mongod.getUri().then(uri => {
+    MongoMemoryServer.create().then(mongod => {
+      let uri = mongod.getUri();
       conn = mongoose.connect(uri).then(function() {
         done();
       }, function(err) {
@@ -72,7 +72,7 @@ describe("Rest CRUD Library", function() {
   });
 
   afterEach(function(done) {
-    mongoose.connection.db.dropDatabase(function() {
+    Model.remove({}, (result) => {
       done();
     });
   })
