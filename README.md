@@ -250,6 +250,12 @@ router.delete('/:widget_id', function(req, res, next) {
 
 ## Changelog
 
+**1.2.6**
+
+- Security update. Updated mongodb-memory-server to version 8.10.1
+- Security update. Updated mocha to version 10.1.0
+- Security update. Updated to latest dependencies for y18n, blob and pathval
+
 **1.2.5**
 
 - Security update. Updated mongodb-memory-server to version 8.0.1
